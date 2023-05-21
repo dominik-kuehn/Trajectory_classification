@@ -183,8 +183,8 @@ print(bad_samples)
 #plot typical traj for different clusters
 
 plotted_particles=25
-for i in range(num_clusters):
-    xi = x[0:cycles, idx==ii[i] and silh2 > 0.99*np.max(silh2[idx==ii[i]])]
+#for i in range(num_clusters):
+#    xi = x[0:cycles, idx==ii[i] and silh2 > 0.99*np.max(silh2[idx==ii[i]])]
 
 
 
