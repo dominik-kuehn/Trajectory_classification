@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 from sklearn.decomposition import PCA
 
-
 # sklearn kmeans
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples as silhouette
@@ -47,7 +46,6 @@ plt.xlabel('x')
 plt.ylabel('y')
 plt.title('%s Electron Trajectories During Magnetic Reconnection' %n)
 plt.grid()
-#plt.show()
 #plt.set(gca, 'FontName', 'Times New Roman')
 #plt.set(gca, 'FontSize', 16)
 
@@ -105,9 +103,11 @@ print(np.shape(traj), np.shape(score))
 
 # choose the reduced number of PCA components to use in the analysis
 num_pca_components = 5
+'''
 for i in range(20):
     pca_expl = sum(explained[0:i])
     print(pca_expl)
+'''
 pca_expl = sum(explained[:num_pca_components])
 
 #Clustering
@@ -117,38 +117,14 @@ print('Clustering ...')
 np.random.seed(12)
 
 # k-means -scikit
-num_clusters = 25 # need to be square of a number, e.g., 16, 25, 36 or 64
+num_clusters = 12 # need to be square of a number, e.g., 16, 25, 36 or 64
 kmeans = KMeans(n_clusters=num_clusters, init='k-means++', n_init=50, max_iter=1000, tol=1e-4, algorithm='lloyd')
 idx = kmeans.fit_predict(score[:,:num_pca_components], sample_weight=None)
 C = kmeans.cluster_centers_
 
-'''
-# k-means -pyclustering
-def cosine_similarity(point1, point2):
-    dimension = len(point1)
-    result = 0.0
-    for i in range(dimension):
-        result += abs(point1[i] - point2[i]) * 0.1
-    return result
-
-metric = distance_metric(type_metric.USER_DEFINED, func=cosine_similarity)
-
-initial_centers = random_center_initializer(score, 3, random_state=5).initialize()
-instanceKm = kmeans(score, initial_centers=initial_centers, metric=distance_metric(1000))
-# perform cluster analysis
-instanceKm.process()
-# cluster analysis results - clusters and centers
-pyClusters = instanceKm.get_clusters()
-pyCenters = instanceKm.get_centers()
-# enumerate encoding type to index labeling to get labels
-pyEncoding = instanceKm.get_cluster_encoding()
-pyEncoder = cluster_encoder(pyEncoding, pyClusters, score)
-pyLabels = pyEncoder.set_encoding(0).get_clusters()
-'''
-
 #plot pca clustered data 
 plt.figure()
-plt.scatter(score[:,1], score[:,2], num_clusters, idx)
+plt.scatter(score[:,0], score[:,1], num_clusters, idx)
 plt.title('K-means -Euclidean Distance')
 plt.xlabel('PC1')
 plt.ylabel('PC2')
@@ -176,19 +152,34 @@ out, ii = out[::-1], ii[::-1]
 print('Calculating Silhouette...')
 silh2 = silhouette(score[:,:num_pca_components], idx)
 bad_samples = np.sum(silh2<0)
-#print(silh2)
+
 print(bad_samples)
 
 
 #plot typical traj for different clusters
+x = M[:cycles,0:nx:3]
+y = M[:cycles,1:ny:3]
 
 plotted_particles=25
-#for i in range(num_clusters):
-#    xi = x[0:cycles, idx==ii[i] and silh2 > 0.99*np.max(silh2[idx==ii[i]])]
+
+
+for i in range(num_clusters):
+    silh_i, x_i, y_i  = silh2[idx==ii[i]], x[:, idx==ii[i]], y[:, idx==ii[i]]   #selecting sil-score, x and y of right class
+    silh_topindex = np.array(np.argsort(silh_i))[::-1]
+    xi = x_i[:, silh_topindex[:plotted_particles]]
+    yi = y_i[:, silh_topindex[:plotted_particles]]
+    plt.subplot(4,3,i+1)
+    plt.plot(xi, yi)
+    perc = counts[ii]/n*100
+    plt.title("%d: %3.1f"%(i, perc[i]))
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid()
+    plt.axis([12,28,8,12])
+    pass
 
 
 
-
-
+plt.show()
 
 #plt.show()
