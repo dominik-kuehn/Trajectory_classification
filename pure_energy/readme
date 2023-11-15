@@ -1,0 +1,4 @@
+num_pca_components: 20
+fft_modes per axis: 20
+pure_energy: clustering over energy/max(energy)
+stand_en. clustering over energy/max(energy) with initial energy removed

@@ -1,0 +1,3 @@
+num_pca_components: varied, see file_name
+fft_modes per axis: 20
+

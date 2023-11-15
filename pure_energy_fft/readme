@@ -1,0 +1,4 @@
+num_pca_components: 20 if possible
+fft_modes per axis (x,y): 0
+included energy_modes: varied, see file_name
+

@@ -1,0 +1,3 @@
+num_pca_components: min(20, fft_modes*2)
+fft_modes per axis: varied, see file_name
+
